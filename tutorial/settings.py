@@ -59,7 +59,7 @@ ROOT_URLCONF = "tutorial.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": ["templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -74,6 +74,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "tutorial.wsgi.application"
 
+LOGIN_URL = "/admin/login/"
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
@@ -133,4 +134,5 @@ OAUTH2_PROVIDER = {
     "SCOPES": {
         "openid": "OpenID Connect scope",
     },
+    "OAUTH2_VALIDATOR_CLASS": "my_oidc.oauth_validator.CustomOAuth2Validator",
 }
