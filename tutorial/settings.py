@@ -162,7 +162,7 @@ LOGGING = {
             'handlers': ['console'],
         },
         'oauthlib': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'handlers': ['console'],
         },
     }
@@ -175,4 +175,5 @@ OAUTH2_PROVIDER = {
         "openid": "OpenID Connect scope",
     },
     "OAUTH2_VALIDATOR_CLASS": "my_oidc.oauth_validator.CustomOAuth2Validator",
+    "PKCE_REQUIRED": True,
 }

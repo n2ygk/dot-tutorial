@@ -1,13 +1,55 @@
 - model: oauth2_provider.application
   pk: 1
   fields:
+    client_id: clear1
+    user: 1
+    redirect_uris: https://www.getpostman.com/oauth2/callback
+    client_type: confidential
+    authorization_grant_type: authorization-code
+    client_secret: secret
+    name: cleartext secret 1
+    skip_authorization: false
+    created: 2022-01-08 14:30:45.971629+00:00
+    updated: 2022-01-08 20:21:59.882847+00:00
+    algorithm: HS256
+- model: oauth2_provider.application
+  pk: 2
+  fields:
+    client_id: clear2
+    user: 1
+    redirect_uris: https://www.getpostman.com/oauth2/callback
+    client_type: confidential
+    authorization_grant_type: authorization-code
+    client_secret: secret
+    name: cleartext secret 2
+    skip_authorization: false
+    created: 2022-01-08 14:30:45.971629+00:00
+    updated: 2022-01-08 20:21:59.882847+00:00
+    algorithm: HS256
+- model: oauth2_provider.application
+  pk: 3
+  fields:
     client_id: hash1
     user: 1
     redirect_uris: https://www.getpostman.com/oauth2/callback
     client_type: confidential
     authorization_grant_type: authorization-code
-    client_secret: pbkdf2_sha256$320000$hash1$Kq6K7d9bB9BeKPrPOhesvZ69Q5VFamI3nRXIXloA1r0=
-    name: hashed secret
+    client_secret: pbkdf2_sha256$260000$y3Cv9dCizBzIPRls7cKGLL$bECV172+JeyWs7VXDydtEK2/DDWE8uzdAmzlMW1GCoo=
+    name: hashed secret 1
+    skip_authorization: false
+    created: 2022-01-08 14:30:45.971629+00:00
+    updated: 2022-01-08 20:21:59.882847+00:00
+    algorithm: HS256
+- model: oauth2_provider.application
+  pk: 4
+  fields:
+    client_id: hash2
+    user: 1
+    redirect_uris: https://www.getpostman.com/oauth2/callback
+    client_type: confidential
+    authorization_grant_type: authorization-code
+    client_secret: pbkdf2_sha256$260000$zfu0btXp72cjjs5Zu3MNKn$UN29iKp1IwfJteOJDZABmAmxLICO4nOKHl30KMHaR0E=
+    name: hashed secret 2
     skip_authorization: false
     created: 2022-01-08 14:30:45.971629+00:00
     updated: 2022-01-08 20:21:59.882847+00:00
