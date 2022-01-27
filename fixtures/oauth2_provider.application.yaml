@@ -6,11 +6,11 @@
     redirect_uris: https://www.getpostman.com/oauth2/callback
     client_type: confidential
     authorization_grant_type: authorization-code
-    client_secret: secret
+    client_secret: pbkdf2_sha256$320000$eE69SsOGCLxROxOa8UJaLS$IXf40/7A+0WCym69hZLSvsE2HfZIrxpGNCT/lQHa2e8=
     name: cleartext secret 1
     skip_authorization: false
     created: 2022-01-08 14:30:45.971629+00:00
-    updated: 2022-01-08 20:21:59.882847+00:00
+    updated: 2022-01-27 15:20:59.294583+00:00
     algorithm: HS256
 - model: oauth2_provider.application
   pk: 2
@@ -20,11 +20,11 @@
     redirect_uris: https://www.getpostman.com/oauth2/callback
     client_type: confidential
     authorization_grant_type: authorization-code
-    client_secret: secret
+    client_secret: pbkdf2_sha256$320000$lScwUMwsjbB2byXHKYfqD0$4n59yNUnEJpnr/Vl8PaL0l9sJu1NYUB19i2PHvYkBGU=
     name: cleartext secret 2
     skip_authorization: false
     created: 2022-01-08 14:30:45.971629+00:00
-    updated: 2022-01-08 20:21:59.882847+00:00
+    updated: 2022-01-27 15:20:42.746540+00:00
     algorithm: HS256
 - model: oauth2_provider.application
   pk: 3
@@ -34,11 +34,11 @@
     redirect_uris: https://www.getpostman.com/oauth2/callback
     client_type: confidential
     authorization_grant_type: authorization-code
-    client_secret: pbkdf2_sha256$260000$y3Cv9dCizBzIPRls7cKGLL$bECV172+JeyWs7VXDydtEK2/DDWE8uzdAmzlMW1GCoo=
+    client_secret: pbkdf2_sha256$320000$zJIdiadWV4txra1G8fizja$G8ltw+0ttlrljZDalfcZRJgM4e3rvRGJzywi9b2IdKI=
     name: hashed secret 1
     skip_authorization: false
     created: 2022-01-08 14:30:45.971629+00:00
-    updated: 2022-01-08 20:21:59.882847+00:00
+    updated: 2022-01-27 15:20:35.510504+00:00
     algorithm: HS256
 - model: oauth2_provider.application
   pk: 4
@@ -48,9 +48,9 @@
     redirect_uris: https://www.getpostman.com/oauth2/callback
     client_type: confidential
     authorization_grant_type: authorization-code
-    client_secret: pbkdf2_sha256$260000$zfu0btXp72cjjs5Zu3MNKn$UN29iKp1IwfJteOJDZABmAmxLICO4nOKHl30KMHaR0E=
+    client_secret: pbkdf2_sha256$320000$Ne2vksnj6Ml687Y5FBOnSE$mZ/QYHNLixHqpXvxZecOm1td55SDkGDyAfYWoVaZ4RA=
     name: hashed secret 2
     skip_authorization: false
     created: 2022-01-08 14:30:45.971629+00:00
-    updated: 2022-01-08 20:21:59.882847+00:00
+    updated: 2022-01-27 15:20:26.182997+00:00
     algorithm: HS256
