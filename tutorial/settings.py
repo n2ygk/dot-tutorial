@@ -177,8 +177,8 @@ OAUTH2_PROVIDER = {
     "OIDC_ENABLED": True,
     "SCOPES": {
         "openid": "OpenID Connect scope",
-        "profile": "OpenID profile scope",
-        "email": "OpenID email scope",
+        "profile": "Provide your personally-identifying information.",
+        "email": "Provide your email address.",
     },
     "OAUTH2_VALIDATOR_CLASS": "my_oidc.oauth_validator.CustomOAuth2Validator",
     "PKCE_REQUIRED": True,

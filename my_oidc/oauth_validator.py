@@ -1,5 +1,7 @@
 from oauth2_provider.oauth2_validators import OAuth2Validator
+from oauth2_provider.models import get_access_token_model
 
+AccessToken = get_access_token_model()
 
 class CustomOAuth2Validator(OAuth2Validator):
     # Return standard OIDC claims per /openid.net/specs/openid-connect-core-1_0.html#StandardClaims
@@ -52,8 +54,16 @@ class CustomOAuth2Validator(OAuth2Validator):
 
         data = self.get_claim_dict(request)
         claims = {}
-
+        # Because the request.scopes from oauthlib is not correct, containing only ["openid"],
+        # look up the AT in the AccessToken model to get the granted scopes.
+        # If there is no Bearer token, then use the request.scopes ("openid").
+        auth_header = request.headers["AUTHORIZATION"] if "AUTHORIZATION" in request.headers else ""
+        if auth_header.lower().startswith("bearer "):
+            access_token = AccessToken.objects.select_related("application", "user").filter(token=auth_header.split()[1]).first()
+            scopes = access_token.scope.split() if access_token else request.scopes
+        else:
+            scopes = request.scopes
         for k, v in data.items():
-            if k in claim_scope and claim_scope[k] in request.scopes:
+            if k in claim_scope and claim_scope[k] in scopes:
                 claims[k] = v(request) if callable(v) else v
         return claims
