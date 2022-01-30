@@ -135,5 +135,6 @@ heroku apps:rename dot-tutorial
 git push heroku main
 heroku config:set DJANGO_DEBUG=false
 heroku config:set DOT_PKCE=false
+heroku config:set OIDC_RSA_PRIVATE_KEY="`cat oidc.key`"
 heroku logs -t
 ```

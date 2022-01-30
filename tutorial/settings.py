@@ -172,9 +172,16 @@ LOGGING = {
     }
 }
 
+oidc_key_file = os.environ.get('OIDC_RSA_PRIVATE_KEY_FILE', None)
+if oidc_key_file:
+    oidc_key = open(oidc_key_file, 'rb').read().decode()
+else:
+    oidc_key = os.environ.get('OIDC_RSA_PRIVATE_KEY', None)
+
+# Workaround inability of PyCharm to handle multi-line environment variables by reading
+# the OIDC RSA private key from a file. Otherwise just take it from the env.
 OAUTH2_PROVIDER = {
     "CLIENT_SECRET_HASHER": "pbkdf2_sha256",
-    "OIDC_ENABLED": True,
     "SCOPES": {
         "openid": "OpenID Connect scope",
         "profile": "Access your personally-identifying information (name etc.).",
@@ -182,6 +189,9 @@ OAUTH2_PROVIDER = {
         "permissions": "Access your user permissions."
     },
     "OAUTH2_VALIDATOR_CLASS": "my_oidc.oauth_validator.CustomOAuth2Validator",
+    # Use internal OIDC implementation if RSA key has been configured:
+    'OIDC_ENABLED': True if oidc_key else False,
+    'OIDC_RSA_PRIVATE_KEY': oidc_key,
     # oidcc-basic-certification-test-plan tests fail when PKCE is required.
     "PKCE_REQUIRED": strtobool(os.environ.get('DOT_PKCE', 'true')),
 }
