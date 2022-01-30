@@ -1,0 +1,3 @@
+https://www.certification.openid.net/test/a/django-oauth-toolkit/callback
+
+So far the errors are because I have it set to require PKCE.
