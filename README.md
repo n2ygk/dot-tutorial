@@ -133,5 +133,7 @@ The basic heroku CLI commands used are:
 heroku apps:create
 heroku apps:rename dot-tutorial
 git push heroku main
+heroku config:set DJANGO_DEBUG=false
+heroku config:set DOT_PKCE=false
 heroku logs -t
 ```

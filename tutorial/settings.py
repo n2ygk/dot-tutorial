@@ -182,7 +182,8 @@ OAUTH2_PROVIDER = {
         "permissions": "Access your user permissions."
     },
     "OAUTH2_VALIDATOR_CLASS": "my_oidc.oauth_validator.CustomOAuth2Validator",
-    "PKCE_REQUIRED": True,
+    # oidcc-basic-certification-test-plan tests fail when PKCE is required.
+    "PKCE_REQUIRED": strtobool(os.environ.get('DOT_PKCE', 'true')),
 }
 
 django_heroku.settings(locals())
