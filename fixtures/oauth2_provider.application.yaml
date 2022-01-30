@@ -31,14 +31,14 @@
   fields:
     client_id: hash1
     user: 1
-    redirect_uris: https://www.getpostman.com/oauth2/callback
+    redirect_uris: "https://www.getpostman.com/oauth2/callback\r\nhttp://localhost:5432/oauth2client"
     client_type: confidential
     authorization_grant_type: authorization-code
     client_secret: pbkdf2_sha256$320000$zJIdiadWV4txra1G8fizja$G8ltw+0ttlrljZDalfcZRJgM4e3rvRGJzywi9b2IdKI=
     name: hashed secret 1
     skip_authorization: false
     created: 2022-01-08 14:30:45.971629+00:00
-    updated: 2022-01-27 15:20:35.510504+00:00
+    updated: 2022-01-29 18:36:00.918361+00:00
     algorithm: HS256
 - model: oauth2_provider.application
   pk: 4

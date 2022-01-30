@@ -118,3 +118,20 @@ It uses [Postman](https://www.postman.com/downloads/), the Swiss Army Knife of t
 
 ![Userinfo lookup](./media/postman-06-userinfo-result.png)
 
+## Deploy on heroku
+
+See https://devcenter.heroku.com/articles/getting-started-with-python and then tweak a few files:
+
+- Procfile
+- app.json
+- release-tasks.sh
+- requirements.txt
+
+The basic heroku CLI commands used are:
+
+```
+heroku apps:create
+heroku apps:rename dot-tutorial
+git push heroku main
+heroku logs -t
+```
