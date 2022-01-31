@@ -29,7 +29,7 @@ class CustomOAuth2Validator(OAuth2Validator):
             "phone_number": lambda request: "+1 800-555-1212",
             "phone_number_verified": lambda request: False,
             "address": lambda request: { "formatted": "3020 Broadway\nNew York City\nNew York 10027" },
-            "updated_at": lambda request: request.user.date_joined.timestamp(),
+            "updated_at": lambda request: request.user.date_joined.timestamp() if request.user.date_joined else 0,
             # non-standard claim example:
             "permissions": lambda request: list(request.user.get_group_permissions()),
         }
