@@ -31,33 +31,11 @@ the possible standard claims. Others are harder, like properly implementing clai
 Returns an `error=invalid_request` query parameter but does not display HTML text.
 
 
-### oidcc-scope-profile: WARNING
-
-> 'claims' in userinfo doesn't contain all scope items of scope in authorization request(corresponds to scope standard claims)
-
-I think this means the server isn't return all the standard claims.
-
-TODO: Add additional standard claims with dummy values.
-
 ### oidcc-scope-email: WARNING
 
 > Unexpectedly found email in id_token. The conformance suite did not request the 'email' claim is returned in the id_token and hence did not expect the server to include it; as per the spec link for this response_type scope=email is a short hand for 'please give me access to the user's email address in the userinfo response'. Technically returning unrequested claims does not violate the specifications but it could be a bug in the server and may result in user data being exposed in unintended ways if the relying party did not expect the email to be in the id_token, and then uses the id_token to provide proof of the authentication event to other parties.
 
 Not surprisingly, claims handling is not up to snuf.
-
-### oidcc-scope-address: SKIPPED
-
-Need to add `address` to `scopes_supported` and to claims.
-
-### oidcc-scope-phone: SKIPPED
-
-Need to add `phone` to `scopes_supported` and to claims.
-
-### oidcc-scope-all: SKIPPED
-
-> This test requests authorization with address, email, phone and profile scopes.
-
-Need to add the missing scopes/claims.
 
 ### oidcc-ensure-other-scope-order-succeeds: WARNING
 
