@@ -1,3 +1,188 @@
 https://www.certification.openid.net/test/a/django-oauth-toolkit/callback
 
 So far the errors are because I have it set to require PKCE.
+So I made PKCE heroku-configurable.
+
+Generated and added RSA KEY but neither jwcrypto nor oidcc likes the JWKS:
+"Unable to verify id_token signature based on server keys"
+"server JWKS does not contain a key with the correct kty that also matches (or does not have) alg/x5t#S256/'use':'sig'"
+
+D'oh! I had set the application algorithm to HMAC with SHA-2 256 instead of RSA!
+
+For this JWT: eyJ0eXAiOiAiSldUIiwgImFsZyI6ICJIUzI1NiJ9.eyJhdWQiOiAiaGFzaDEiLCAiaWF0IjogMTY0MzY0NTk5MCwgImF0X2hhc2giOiAiNldQR1NkSnNVQ3ZVUlQ2UTVvdnlLdyIsICJzdWIiOiAiMSIsICJnaXZlbl9uYW1lIjogIlN1cGVyIiwgImZhbWlseV9uYW1lIjogIlVzZXIiLCAibmFtZSI6ICJTdXBlciBVc2VyIiwgInByZWZlcnJlZF91c2VybmFtZSI6ICJhZG1pbiIsICJlbWFpbCI6ICJhZG1pbkBleGFtcGxlLmNvbSIsICJpc3MiOiAiaHR0cDovL2xvY2FsaG9zdDo4MDAwL28iLCAiZXhwIjogMTY0MzY4MTk5MCwgImF1dGhfdGltZSI6IDE2NDM0Nzk5NzksICJqdGkiOiAiMmVhY2RmMzctODEyNy00ODZhLWFhNjYtOWRmNjkxMzQ1M2JhIn0.d0_bBReAQtNZs_jusf5duDpxjEULH-PAM4uO8Y9Aqnc
+
+It decodes as:
+
+header:
+{
+  "typ": "JWT",
+  "alg": "HS256"
+}
+
+payload:
+{
+  "aud": "hash1",
+  "iat": 1643645990,
+  "at_hash": "6WPGSdJsUCvURT6Q5ovyKw",
+  "sub": "1",
+  "given_name": "Super",
+  "family_name": "User",
+  "name": "Super User",
+  "preferred_username": "admin",
+  "email": "admin@example.com",
+  "iss": "http://localhost:8000/o",
+  "exp": 1643681990,
+  "auth_time": 1643479979,
+  "jti": "2eacdf37-8127-486a-aa66-9df6913453ba"
+}
+
+
+
+
+-----
+Here's what the JWKS response from dot looks like:
+
+
+{
+    "keys": [
+        {
+            "alg": "RS256",
+            "use": "sig",
+            "kid": "hqxg_oM_SlPSEtAcsaA3EdglbKtwGXHm1BWVS5TFIS4",
+            "e": "AQAB",
+            "kty": "RSA",
+            "n": "4UyVhl9WmaPJ6IQRQiWO2IroCGMQQIf4nf2-Ns8W9cQHU-coxicCu6ON1Kc0VNfY4AX5xW9A7zK1sr7NVT4B_kafI8H7EIuRWxvYTNzMpN5uDJx11hrYWdeTRlrtZrysQ2RS42sEkjhnw08AOo3WqNSbJ0goHZdA89yERa3aArDFz5jCS-ICwUYUv5s6i4QtsqITFqKDPG4cHgBmoChehyDu82fpIDCIBeOw6p-QrQC6WjoHKK8G2X-UiDHQjUR6zydiFIXv79eK6yB3dAujNo8BgeKPV31IFqPezZnOG4gR_x-TCMigBWY34fXxfLBfjfxqAaVUjpNyNegYoNYzL1H0LHJ0m1GMSxUZ3Cnm5JVOdEGGU4rFB416Hu2984gfnzT8IHlHip_b4bI6rOAo3gOILWFizCa6B44tnHf_-teuQpTRokvkEDK4lsYPcHb-VeDVxZOE2wQV-2OiOwpsJy1Mc1X6jSdDodyJ40XWy4Ly3_AiL5bItQSy8X6Ezz_AgSlsTEokKj1c7JGxY90IxrSXj0zD8eJu1NBMBRKTmPfMKSQWRdTtn_ejOx281J_FFfLcGSmM_bBigXu_S6KgLI6UeirkpEmzc539QyKlhAskBvOGBwiLfF2wGU8jaQsKyBW7DsYWhsheKRkBR8dZVcxGBvwiRH4oLIDoqBCaQsk"
+        }
+    ]
+}
+
+And here's what the JWKS response from PingFederate looks like:
+
+{
+    "keys": [
+        {
+            "kty": "EC",
+            "kid": "382flqZGKjVkrkycUqkwHwfCSJg",
+            "use": "sig",
+            "x": "uW1G3LPGl8kbdRkHYGGRXTaAGwg0U-9zBSJwsouZZ3M",
+            "y": "cXn_sLu_STlSg9fgJqYwjyADbuE2kMOy0lCXw1R34Ik",
+            "crv": "P-256"
+        },
+        {
+            "kty": "EC",
+            "kid": "6dhwjVqAOoB6iUY-opXmnxCT8aU",
+            "use": "sig",
+            "x": "VHWsnoe5p5c5NJhru5xxgJZbQjb9qJ9SvjPp6w1a-2e1ih-4iQBoRHAID4VYSNct",
+            "y": "OeRhLYMQorPW-3RP2bM4aXD9diQholCCBav2lVY_W8yeak5YZFQRla0_jvMSONbh",
+            "crv": "P-384"
+        },
+        {
+            "kty": "RSA",
+            "kid": "AqHxCM01oEPyMLUU4581uas_OPw",
+            "use": "sig",
+            "n": "jN6iR-tsKieqXhFutI1BAwSwXUtvE6CYmUYBrzkJ2Qc4rH2XY90hb5fD-brqFn_VEp1KML-dPrQr_E2X67e9gokelskW4i6F6AH2IFLtB3rE6OBhyTMAUOpsFx3V4i7nro-IoXUCo_F1ZtWcGy7i0b-ToRKx4uneJFhHuShNn13YrpOKqvxs2tMhGeLGAGilTDcl-K3SMrC2OkqdezT0Grm2oidpoPhY6XLklrHvGlTfSyrqnFoRgTgcyfdZknxl0jVFK5O4CAGKnYaKrFtPuucN2j0htnFGlkW0G5oneJfCCpugH-CxzKCuWl9SkgsLkKTyIQ5HJZVBMA-MT6yROw",
+            "e": "AQAB"
+        },
+        {
+            "kty": "EC",
+            "kid": "wiv5TABVK-f_XmLlB_u16C_TOzI",
+            "use": "sig",
+            "x": "ACHqfjHlM9P8NxYv51U8lKYwcvMWUW4rukuta0dSHfr01k3toOOgVpxPv2VnY_H1QW-sORimr7LewtdjWKXPfuqY",
+            "y": "AIHU-Np2YrXMfi7gWRgK_587UkxOSXAEQEp1KELndqWvLYIebt1Ke5eDYsbPgAgKmFWjb5yiJoFMk-zm5c6zzJID",
+            "crv": "P-521"
+        },
+        {
+            "kty": "EC",
+            "kid": "ZGFC6uK74lS0SbIZYxDhEuLMA4U",
+            "use": "sig",
+            "x": "GQCZlfo25aVI8iFtrm3fFPyLLSAPUgVBFLEM6eBfwX0qiL8JAekkP7vCLymnzhaq",
+            "y": "fet5zgNj2Yea5OOD4GQtIT5-4kfFh02QLJQUVxtuBFICO1-IVK4xRXjqKy7g0m2i",
+            "crv": "P-384"
+        },
+        {
+            "kty": "EC",
+            "kid": "iYmEgJO-xpUzPrFtbmyk-QtKOoQ",
+            "use": "sig",
+            "x": "AZk9roOpJGr9Aklx05KLDpTxD8IJKw5MUzDEYed9qC2DnBr30HNy6rk9wK0ta32vY0X9LSm-DXX7KYi1f9gdb4s4",
+            "y": "APIqKUB0kbfY9ErAtcqqxiAlsrctDFUfrVVjczQtkbjmZvvBjNepC98iI3WuOalGD7SE9i8G-ySDe4t0WeD9W1oF",
+            "crv": "P-521"
+        },
+        {
+            "kty": "RSA",
+            "kid": "nJExASkDB8lLxrQ9MDEZBIPBQj4",
+            "use": "sig",
+            "n": "r6dZ-Reh-mgqMFjc7KGGen8ZIdXu1hjCOtU_n90zCBjeCbxzCW7NP_nPUDpfxjg3EALGW3L9Ayn9M_UoTVSHq-3q-Vuq6h_-FBQjO0EzPJFpNsJ2Z20Wn5My2YHSw1W3_Q_B1UDVa6-Jg9gSkLixZdqcmQ14A3xV7zn6jo_9F1Wb9g2Tnq8Prr1p_eJAkVye1k0_341GNzYm2zKV7lDCWQ_ImSTHhamP1gPFs49NcFbNpRM5GQlWKkIQqwQd722UN0a8wNmxKgodZ0zuNAHL85Nm6HC4yHIMgKaOFp-uJFbTSn-R6ID2k5DawDG0UY6SyVUyXq81qWvqUHmPUTVeRQ",
+            "e": "AQAB"
+        },
+        {
+            "kty": "EC",
+            "kid": "ogfnfFx9SazVsOomTqojTVWVqqI",
+            "use": "sig",
+            "x": "03FN9o2o_04xBQFWrBmpYm-pkThDTcktN5bNB33MUMY",
+            "y": "Jzcx_QTpU55u9Jvd2_q8J4PwUzTCaXl1VppHguXKaGk",
+            "crv": "P-256"
+        },
+        {
+            "kty": "EC",
+            "kid": "kOaotdVgFBwCb5rVqDxWaooTj_A",
+            "use": "sig",
+            "x": "Af3Ac9ggZtKnod9Tcncow8fQghTBoR7V1TQDW0rMpJAZfgWNM42jAZczVA_R7rUwM-v0JpSC6e4gQOZj46QlhpRa",
+            "y": "AA9GaCWPtVd1kCMM955aSAOjkZkS8Vo8UrYXBOxhDUHW1GZhMKvPf3Kno7sUKzH6-4I0y5M4G0xpp0a99PSoablQ",
+            "crv": "P-521"
+        },
+        {
+            "kty": "RSA",
+            "kid": "nfJkSeUvBTIONyjyjhv81w1rU_M",
+            "use": "sig",
+            "n": "jCjd4H3HuNWpnbo_8SWdu54n8M-zUhaVHG1mSeBdp3dSkVunkN67lE99HtDkDiOfxQxbYqbE5dt3Oo4r_tjvKgDh7LoXUxZ7nQx556wiQqr2CzAXjyyxlLYK8qDsVXuHg7-Ff4wBfehxrGzYxuN6d8NBJHfaiIITRzBYCf4VI24i2FIsbR_Av_yWw1oy0EDMDE1RYsMhTsztBtvZUcW3j9bXnrJEQrbqqkrO3WYF5oCXEb7SQFiHY94ss_NM6aI8v8yPpDwEd9yFZsTaKOwogOczOxd3SdCoBmuVDuIqfxA1rnxTSgebu6lSNioGM6cTF8cTDcn90kPlQCHjzN6cmw",
+            "e": "AQAB"
+        },
+        {
+            "kty": "EC",
+            "kid": "o52AIH-NpnJr4YsbhDNB5RD609o",
+            "use": "sig",
+            "x": "3ORb9bRHoQ8s1Xc3V1-m4IrO82t6nZxfNxdegg7XSrsw_zVxmCMJ2SH2CZaxPV7Z",
+            "y": "fHsrASYqNFtP4SXIZHUBQZJP7kZxfz4ZR5bGcHSHN0uOKpDelOHeVV_ga4BfrsxB",
+            "crv": "P-384"
+        },
+        {
+            "kty": "EC",
+            "kid": "tWHqCdhM_DXBmqWgwX_UTWGXGkU",
+            "use": "sig",
+            "x": "SD00zybm8bRXpvLhLXlm74wOUyM98o81r0Ui9JPXYgI",
+            "y": "gbiczvw08LjAnA8Bkn0QdvOMCBxgU5xf9w6GepP8e24",
+            "crv": "P-256"
+        },
+        {
+            "kty": "EC",
+            "kid": "E4JA1mq-R_DPpo9sgXudjvEgH3A",
+            "use": "enc",
+            "x": "AeVzrby_q8IiufGB1KhGMBFo4uAjkM-qT9LnSlshkGNfbmBcxeDxG7eRFEUVC3C58BUcRieIvHVo23hSFgZHyc0r",
+            "y": "ACW8WUfqrKeFPz72w24J-uEwd4aER_iYb5YCobYnr5B9BX10i3eKG-9YjvW1FBYeY-OSR9DIdgunJyVK2W5L08Vt",
+            "crv": "P-521"
+        },
+        {
+            "kty": "RSA",
+            "kid": "hvhg-xfrvUUMNeRHD-LcU5mYW4I",
+            "use": "enc",
+            "n": "olDG3Vh5eyfH3wBrls9ch_44HYH2lY6A1-3fSH6rb0xte2HI0kQdt3uc4gKtUe49-dD8PBzM8q_hO_c6fteeEFCNZ6IViTfPmsdMIDYcIhukzsrtG6NiiCqwmBJUdBF3q7dXKnqff1XJ1Im0j5FHqzOYv8TowArvpU2qzZ_CPaeueNYL13Au7MeXDTEdRUxarSWCbhMrK7jmLBXZcGjKBQPZry-9jVrlhh7Q38zCHFV5ylSgaEd7C513XIBqtiHKZ9dNPEPYprHgzTuBimCBtpHsl2k0eBKWZEuEG32mHGnVGOPGHDpjmAovLmkOZ_4z3QS2qBhDvU-2m6SWN3AvbQ",
+            "e": "AQAB"
+        },
+        {
+            "kty": "EC",
+            "kid": "ypXlNdsxOG8uwnFkoC4Ri7nZ5zM",
+            "use": "enc",
+            "x": "vGKp9R60n6NVtOuXG8rXXTRNeWS-bXf505eNB05h-WI",
+            "y": "q9ogHe4_uZ3yjZgRrBLVzFf1nDk_xnZ0W2_JxtL-a-8",
+            "crv": "P-256"
+        },
+        {
+            "kty": "EC",
+            "kid": "zdSnWA2i2uzGvU1OIzxi7_6tjww",
+            "use": "enc",
+            "x": "SKztBPzYx4yjqYIqVhrhqjnhhu6sLpJQ6nH0SHwkFwGq8ytGfXRLDeLS0x3hy1vq",
+            "y": "P7IT5be2cItmz_WtZHWw66lPhRbLVVMHulsjhhLHRWA5ZOhcOnar47_11L_H0tgX",
+            "crv": "P-384"
+        }
+    ]
+}

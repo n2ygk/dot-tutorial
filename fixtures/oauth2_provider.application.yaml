@@ -38,8 +38,8 @@
     name: hashed secret 1
     skip_authorization: false
     created: 2022-01-08 14:30:45.971629+00:00
-    updated: 2022-01-30 21:29:43.189321+00:00
-    algorithm: HS256
+    updated: 2022-01-31 19:11:17.802134+00:00
+    algorithm: RS256
 - model: oauth2_provider.application
   pk: 4
   fields:
@@ -52,5 +52,5 @@
     name: hashed secret 2
     skip_authorization: false
     created: 2022-01-08 14:30:45.971629+00:00
-    updated: 2022-01-30 21:29:35.380651+00:00
-    algorithm: HS256
+    updated: 2022-01-31 19:11:33.659422+00:00
+    algorithm: RS256
