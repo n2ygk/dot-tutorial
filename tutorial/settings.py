@@ -182,10 +182,14 @@ else:
 # the OIDC RSA private key from a file. Otherwise just take it from the env.
 OAUTH2_PROVIDER = {
     "CLIENT_SECRET_HASHER": "pbkdf2_sha256",
+    # For OIDC certification implement all 5.4 standard scopes.
     "SCOPES": {
         "openid": "OpenID Connect scope",
         "profile": "Access your personally-identifying information (name etc.).",
         "email": "Access your email address.",
+        "address": "Access your address.",
+        "phone": "Access your phone number.",
+        # this one is a non-standard scope just for fun.
         "permissions": "Access your user permissions."
     },
     "OAUTH2_VALIDATOR_CLASS": "my_oidc.oauth_validator.CustomOAuth2Validator",
