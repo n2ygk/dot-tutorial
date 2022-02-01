@@ -1,6 +1,6 @@
 # OIDC Basic Certification testing notes
 
-Currently working on `oidcc-basic-certification-test-plan`.
+Currently working on [`oidcc-basic-certification-test-plan`](https://www.certification.openid.net/plan-detail.html?plan=23QYhdmrL1fkZ&public=true)
 
 
 ## Configuration
