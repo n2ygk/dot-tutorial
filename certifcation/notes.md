@@ -9,18 +9,18 @@ Clients: hash1 and hash2.
 
 ### General Issues
 
-So far the errors were because I have it set to require PKCE.
-So I made PKCE heroku-configurable and off for now.
+~Initial errors were because I have it set to require PKCE.~
+I made PKCE configurable via env and off for now.
 
-Generated and added RSA KEY but neither jwcrypto nor oidcc likes the JWKS:
+~Generated and added RSA KEY but neither jwcrypto nor oidcc likes the JWKS:
 "Unable to verify id_token signature based on server keys"
-"server JWKS does not contain a key with the correct kty that also matches (or does not have) alg/x5t#S256/'use':'sig'"
+"server JWKS does not contain a key with the correct kty that also matches (or does not have) alg/x5t#S256/'use':'sig'"~
+(Resolved: D'oh! I had set the application algorithm to HMAC instead of RSA!)
 
-D'oh! I had set the application algorithm to HMAC with SHA-2 256 instead of RSA!
 
-
-The following summarize tests that did not fully pass. Some are pretty easy things like needing to mock all
-the possible standard claims. Others are harder, like properly implementing claims processing.
+The following summarize tests that did not fully pass. Some are pretty easy things like ~needing to mock all
+the possible standard claims~(done). Others are harder, like properly implementing claims processing. And then there are the
+really hard ones;-)
 
 ### oidcc-response-type-missing: REVIEW
 
@@ -28,19 +28,20 @@ the possible standard claims. Others are harder, like properly implementing clai
 > This test sends an authorization request that is missing the response_type parameter. The authorization server must either redirect back with an 'unsupported_response_type' or 'invalid_request' error, or must display an error saying the response type is missing, a screenshot of which should be uploaded.
 
 
-Returns an `error=invalid_request` query parameter but does not display HTML text.
+Returns an `error=invalid_request` query parameter but does not display HTML text. This may be sufficient.
 
 
 ### oidcc-scope-email: WARNING
 
 > Unexpectedly found email in id_token. The conformance suite did not request the 'email' claim is returned in the id_token and hence did not expect the server to include it; as per the spec link for this response_type scope=email is a short hand for 'please give me access to the user's email address in the userinfo response'. Technically returning unrequested claims does not violate the specifications but it could be a bug in the server and may result in user data being exposed in unintended ways if the relying party did not expect the email to be in the id_token, and then uses the id_token to provide proof of the authentication event to other parties.
 
-Not surprisingly, claims handling is not up to snuf.
+**CLAIMS**: Not surprisingly, claims handling is not up to snuff.
 
 ### oidcc-ensure-other-scope-order-succeeds: WARNING
 
 > Unexpectedly found email in id_token. The conformance suite did not request the 'email' claim is returned in the id_token and hence did not expect the server to include it; as per the spec link for this response_type scope=email is a short hand for 'please give me access to the user's email address in the userinfo response'. Technically returning unrequested claims does not violate the specifications but it could be a bug in the server and may result in user data being exposed in unintended ways if the relying party did not expect the email to be in the id_token, and then uses the id_token to provide proof of the authentication event to other parties.
 
+**CLAIMS**
 
 ### oidcc-prompt-login: FAILED
 
@@ -81,6 +82,8 @@ Not surprisingly, claims handling is not up to snuf.
 
 > id_token auth_time is older than 1 second (allowing 5 minutes skews)
 
+[**#1013**](https://github.com/jazzband/django-oauth-toolkit/issues/1013)
+
 ### oidcc-id-token-hint: Interrupted
 
 > This test calls the authorization endpoint test twice. The second time it will include prompt=none with the id_token_hint set to the id token from the first authorization, and the authorization server must return successfully immediately without interacting with the user. The test verifies that auth_time (if present) and sub are consistent between the id_tokens from the first and second authorizations.
@@ -116,8 +119,9 @@ InOBjlTBDLirQjQxwYCrBOYfvRUMlSC__-3Ame_YURv5krPA-JqU3cJF6Pxgs7DttvxIBRLKLhfOnb2p
 
 > This test makes an authorization request requesting the 'name' claim as essential (in the userinfo, except for response_type=id_token where it is requested in the id_token), and the OP must return a successful result. A warning is raised if the OP fails to return a value for the name claim.
 
-
 > name not found in userinfo
+
+**CLAIMS**
 
 
 ### oidcc-refresh-token: WARNING
