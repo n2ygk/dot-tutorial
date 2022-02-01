@@ -1,4 +1,7 @@
-# OIDC Certification testing notes
+# OIDC Basic Certification testing notes
+
+Currently working on `oidcc-basic-certification-test-plan`.
+
 
 ## Configuration
 Redirect URI: https://www.certification.openid.net/test/a/django-oauth-toolkit/callback
