@@ -3,11 +3,11 @@ Django
 django-cors-headers
 ### django-oauth-toolkit
 # current stable version:
-#django-oauth-toolkit==1.6.2
+django-oauth-toolkit==1.7.0
 # local dev copy
 #/Users/ac45/src/django-oauth-toolkit
 # master branch:
-git+https://github.com/jazzband/django-oauth-toolkit
+#git+https://github.com/jazzband/django-oauth-toolkit
 # PR #1108:
 #git+https://github.com/n2ygk/django-oauth-toolkit.git@oidc_userinfo_claims_token
 ###
