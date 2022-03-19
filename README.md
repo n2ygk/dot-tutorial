@@ -18,8 +18,7 @@ It is based on this [tutorial](https://django-oauth-toolkit.readthedocs.io/en/la
   * [Decode the id_token](#decode-the-id_token)
   * [Do a Userinfo lookup of the token](#do-a-userinfo-lookup-of-the-token)
 - [Deploy on heroku](#deploy-on-heroku)
-- [Add Celery automated task discovery](#add-celery-automated-task-discovery)
-  * [Erroneous DOT PR to add Celery auto-discovered tasks.py](#erroneous-dot-pr-to-add-celery-auto-discovered-taskspy)
+- [Add Celery task to clear expired tokens](#add-celery-task-to-clear-expired-tokens)
   * [Basic Celery setup](#basic-celery-setup)
   * [App changes](#app-changes)
   * [Start RabbitMQ](#start-rabbitmq)
@@ -163,29 +162,22 @@ heroku config:set OIDC_RSA_PRIVATE_KEY="`cat oidc.key`"
 heroku logs -t
 ```
 
-## Add Celery automated task discovery
+## Add Celery task to clear expired tokens
 
-### Erroneous DOT PR to add Celery auto-discovered tasks.py
+The `cleartokens` management command should be run periodically to delete expired tokens.
 
-DOT PR [#1070](https://github.com/jazzband/django-oauth-toolkit/pull/1070) purported to add a Celery auto-loaded
-task to cleartokens but did not provide enough of an example or test case and,  based on
-[#1123](https://github.com/jazzband/django-oauth-toolkit/pull/1123), it has become clear that it never worked.
+One way to do this is to use the Celery task manager to configure an periodic task. Celery
+has an auto-discovery feature that looks for `tasks.py` in each installed app, so we'll add one here.
 
-Given the above error and the conflict with [Huey](https://github.com/coleifer/huey)
-[#1114](https://github.com/jazzband/django-oauth-toolkit/issues/1114),
-which also looks for `tasks.py` this PR will shortly be reverted.
+### Basic Celery setup
 
-Meanwhile, here's an example with the fix applied in [#1123](https://github.com/jazzband/django-oauth-toolkit/pull/1123).
+Here are some documentation links to follow:
 
 <!-- this domain is SNAFU:
 https://docs.celeryproject.org/en/stable/django/first-steps-with-django.html
 
 https://docs.celeryproject.org/en/latest/userguide/periodic-tasks.html#using-custom-scheduler-classes
 -->
-
-### Basic Celery setup
-
-Here are some documentation links to follow:
 
 https://docs.celeryq.dev/en/stable/django/first-steps-with-django.html
 
@@ -195,12 +187,14 @@ https://django-celery-beat.readthedocs.io/en/latest/index.html
 
 The key steps are:
 1. Add support in the Django admin to configure Celery.
-2. Use Celery Beat for the task timing
-3. Use RabbitMQ for the message queue.
+2. Add a celery task definition.
+3. Use Celery Beat for the task timing
+4. Use RabbitMQ for the message queue.
 
 ### App changes
 
-The required changes to this tutorial app are shown here as diffs:
+The required changes to this tutorial app are shown here as diffs. This is currently using an
+unmerged PR that reverts an incorrect addition of Celery `tasks.py` to DOT.
 
 ```diff
 diff --git a/requirements.txt b/requirements.txt
@@ -213,6 +207,10 @@ index 09951f9..59983f4 100644
  gunicorn
 +celery>=5.2
 +django-celery-beat
+-django-oauth-toolkit==1.7.0
++#django-oauth-toolkit==1.7.0
++# PR #1126:
++git+https://github.com/n2ygk/django-oauth-toolkit.git@revert_1070
 diff --git a/tutorial/__init__.py b/tutorial/__init__.py
 index e69de29..fb989c4 100644
 --- a/tutorial/__init__.py
@@ -253,14 +251,29 @@ diff --git a/tutorial/settings.py b/tutorial/settings.py
 index 2fc7b41..7172e24 100644
 --- a/tutorial/settings.py
 +++ b/tutorial/settings.py
-@@ -42,6 +42,7 @@ INSTALLED_APPS = [
+@@ -42,6 +42,8 @@ INSTALLED_APPS = [
      "django.contrib.staticfiles",
      "oauth2_provider",
      "corsheaders",
++    "tutorial",
 +    "django_celery_beat",
  ]
  
  MIDDLEWARE = [
+diff --git a/tutorial/tasks.py b/tutorial/tasks.py
+new file mode 100644
+index 0000000..74b76d1
+--- /dev/null
++++ b/tutorial/tasks.py
+@@ -0,0 +1,8 @@
++from celery import shared_task
++
++@shared_task
++def clear_tokens():
++    from oauth2_provider.models import clear_expired
++
++    clear_expired()
++
 ```
 
 Now the Django admin console will show some new Periodic Tasks:
@@ -342,7 +355,7 @@ User information: uid=1476831425 euid=1476831425 gid=1291818287 egid=1291818287
                 
 
 [tasks]
-  . oauth2_provider.tasks.clear_tokens
+  . tutorial.tasks.clear_tokens
   . tutorial.celery.debug_task
 
 [2022-03-19 17:12:57,116: INFO/MainProcess] Connected to amqp://guest:**@127.0.0.1:5672//
@@ -354,13 +367,13 @@ User information: uid=1476831425 euid=1476831425 gid=1291818287 egid=1291818287
 
 [2022-03-19 17:12:58,187: INFO/MainProcess] celery@082-AC45-M2 ready.
 [2022-03-19 17:12:58,188: INFO/MainProcess] Task tutorial.celery.debug_task[63f16c50-ef33-41f8-bdc0-0216a8486466] received
-[2022-03-19 17:12:58,188: INFO/MainProcess] Task oauth2_provider.tasks.clear_tokens[b69380b1-f6bd-4ed1-927e-8b2b7b2bfa14] received
+[2022-03-19 17:12:58,188: INFO/MainProcess] Task tutorial.tasks.clear_tokens[b69380b1-f6bd-4ed1-927e-8b2b7b2bfa14] received
 [2022-03-19 17:12:58,292: WARNING/ForkPoolWorker-8] Request: <Context: {'lang': 'py', 'task': 'tutorial.celery.debug_task', 'id': '63f16c50-ef33-41f8-bdc0-0216a8486466', 'shadow': None, 'eta': None, 'expires': None, 'group': None, 'group_index': None, 'retries': 0, 'timelimit': [None, None], 'root_id': '63f16c50-ef33-41f8-bdc0-0216a8486466', 'parent_id': None, 'argsrepr': '()', 'kwargsrepr': '{}', 'origin': 'gen76730@082-AC45-M2', 'ignore_result': False, 'properties': {'content_type': 'application/json', 'content_encoding': 'utf-8', 'application_headers': {'lang': 'py', 'task': 'tutorial.celery.debug_task', 'id': '63f16c50-ef33-41f8-bdc0-0216a8486466', 'shadow': None, 'eta': None, 'expires': None, 'group': None, 'group_index': None, 'retries': 0, 'timelimit': [None, None], 'root_id': '63f16c50-ef33-41f8-bdc0-0216a8486466', 'parent_id': None, 'argsrepr': '()', 'kwargsrepr': '{}', 'origin': 'gen76730@082-AC45-M2', 'ignore_result': False}, 'delivery_mode': 2, 'priority': 0, 'correlation_id': '63f16c50-ef33-41f8-bdc0-0216a8486466', 'reply_to': '51d61210-7a3f-33db-8307-94683ce668e6'}, 'reply_to': '51d61210-7a3f-33db-8307-94683ce668e6', 'correlation_id': '63f16c50-ef33-41f8-bdc0-0216a8486466', 'hostname': 'celery@082-AC45-M2', 'delivery_info': {'exchange': '', 'routing_key': 'celery', 'priority': 0, 'redelivered': False}, 'args': [], 'kwargs': {}, 'is_eager': False, 'callbacks': None, 'errbacks': None, 'chain': None, 'chord': None, 'called_directly': False, '_protected': 1}>
 [2022-03-19 17:12:58,292: INFO/ForkPoolWorker-1] refresh_expire_at is None. No refresh tokens deleted.
 [2022-03-19 17:12:58,294: INFO/ForkPoolWorker-8] Task tutorial.celery.debug_task[63f16c50-ef33-41f8-bdc0-0216a8486466] succeeded in 0.0025927220000001583s: None
 [2022-03-19 17:12:58,305: INFO/ForkPoolWorker-1] 0 Expired access tokens deleted
 [2022-03-19 17:12:58,306: INFO/ForkPoolWorker-1] 0 Expired grant tokens deleted
-[2022-03-19 17:12:58,307: INFO/ForkPoolWorker-1] Task oauth2_provider.tasks.clear_tokens[b69380b1-f6bd-4ed1-927e-8b2b7b2bfa14] succeeded in 0.015684232999999992s: None
+[2022-03-19 17:12:58,307: INFO/ForkPoolWorker-1] Task tutorial.tasks.clear_tokens[b69380b1-f6bd-4ed1-927e-8b2b7b2bfa14] succeeded in 0.015684232999999992s: None
 ...
 ```
 
