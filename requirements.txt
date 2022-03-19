@@ -14,3 +14,5 @@ django-oauth-toolkit==1.7.0
 PyYAML
 django-heroku
 gunicorn
+celery>=5.2
+django-celery-beat
