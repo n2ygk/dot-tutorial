@@ -138,3 +138,8 @@ heroku config:set DOT_PKCE=false
 heroku config:set OIDC_RSA_PRIVATE_KEY="`cat oidc.key`"
 heroku logs -t
 ```
+
+## OIDC Certification 
+
+see [certification](./certification) for rough notes 
+on running OIDC certification tests. 
