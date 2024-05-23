@@ -12,8 +12,14 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 import django_heroku
 import os
-from distutils.util import strtobool
 from pathlib import Path
+
+# distutils.util.strtobool was removed
+def strtobool(value: str) -> bool:
+    value = value.lower()
+    if value in ("y", "yes", "on", "1", "true", "t"):
+        return True
+    return False
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
